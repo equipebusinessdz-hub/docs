@@ -1,29 +1,525 @@
 ---
-title: Webhooks
-description: Como a StylePay envia notificações de PIX Cash-in, Cash-out e Refund (MED).
+title: "Webhooks"
+description: "Receba notificações em tempo real sobre transações PIX na StylePay"
 ---
 
-# Webhooks
+## Visão Geral
 
-## PIX Cash-in
+Os webhooks da StylePay permitem que sua aplicação receba notificações automáticas sobre mudanças de status em transações PIX, incluindo:
 
-**Evento**: `pix.cashin.paid`
+- **PIX Cash-in** - Recebimentos via QR Code
+- **PIX Cash-out** - Pagamentos e saques PIX
+- **Refund (MED)** - Estornos de depósitos
 
-### Payload enviado pela StylePay
+<Note>
+  Existem dois tipos de webhooks: **Entrada** (provedor → StylePay) e **Saída** (StylePay → sua aplicação). Esta documentação foca nos webhooks de **saída**, que você precisa configurar.
+</Note>
+
+## Como Configurar
+
+Você pode configurar a URL de callback de duas formas:
+
+### 1. Por Transação (Recomendado)
+
+<CodeGroup>
+
+```json Gerar QR Code PIX
+{
+  "amount": 100.50,
+  "external_id": "pedido_123",
+  "postbackUrl": "https://seusite.com/webhook/pix",
+  ...
+}
+```
+
+```json Pagamento PIX
+{
+  "amount": 50.00,
+  "description": "Pagamento fornecedor",
+  "callbackUrl": "https://seusite.com/webhook/pix-payment",
+  ...
+}
+```
+
+</CodeGroup>
+
+### 2. URL Global (Fallback)
+
+Configure uma URL padrão no painel StylePay para transações que não especificarem uma URL própria.
+
+<Tip>
+  A StylePay sempre tenta usar a URL específica da transação primeiro. A URL global é usada apenas como fallback.
+</Tip>
+
+## Eventos Disponíveis
+
+### PIX Cash-in (Recebimentos)
+
+| Evento | Status | Descrição |
+|--------|--------|-----------|
+| `pix.cashin.pending` | PENDING | Cobrança criada, aguardando pagamento |
+| `pix.cashin.paid` | PAID | Pagamento confirmado |
+
+### PIX Cash-out (Pagamentos)
+
+| Evento | Status | Descrição |
+|--------|--------|-----------|
+| `pix.cashout.pending` | PENDING | Pagamento criado, processando |
+| `pix.cashout.paid` | PAID | Pagamento realizado com sucesso |
+| `pix.cashout.cancelled` | CANCELLED | Pagamento cancelado ou falhou |
+
+### Refund (Estornos)
+
+| Evento | Status | Descrição |
+|--------|--------|-----------|
+| `pix.refund.paid_out` | CANCELLED | Depósito estornado via MED |
+
+## Estrutura dos Payloads
+
+### PIX Cash-in - Pagamento Confirmado
 
 ```json
 {
   "event": "pix.cashin.paid",
-  "requestNumber": "SEU_EXTERNAL_ID",
+  "requestNumber": "pedido_123",
   "statusTransaction": "PAID",
-  "idTransaction": "UUID_DA_TRANSACAO",
+  "idTransaction": "550e8400-e29b-41d4-a716-446655440000",
   "typeTransaction": "PIX",
-  "value": 100.5,
+  "value": 100.50,
   "debtorName": "João Silva",
   "debtorDocument": "12345678900",
   "date": "2025-01-01T10:02:00.000Z",
-  "endToEnd": "E2E9A8B7C6D5...",
+  "endToEnd": "E2E9A8B7C6D5E4F3...",
   "providerPayload": {
-    "...": "payload original enviado pelo provedor"
+    "// Payload original do provedor"
   }
 }
+```
+
+<Accordion title="Campos do Payload - Cash-in">
+  <ResponseField name="event" type="string" required>
+    Tipo do evento (`pix.cashin.paid` ou `pix.cashin.pending`)
+  </ResponseField>
+
+  <ResponseField name="requestNumber" type="string" required>
+    Seu identificador externo (`external_id`) informado na criação
+  </ResponseField>
+
+  <ResponseField name="statusTransaction" type="string" required>
+    Status atual da transação (`PENDING`, `PAID`)
+  </ResponseField>
+
+  <ResponseField name="idTransaction" type="string" required>
+    UUID único da transação na StylePay
+  </ResponseField>
+
+  <ResponseField name="typeTransaction" type="string" required>
+    Tipo da transação (sempre `PIX` para cash-in)
+  </ResponseField>
+
+  <ResponseField name="value" type="number" required>
+    Valor da transação em reais
+  </ResponseField>
+
+  <ResponseField name="debtorName" type="string">
+    Nome do pagador
+  </ResponseField>
+
+  <ResponseField name="debtorDocument" type="string">
+    CPF/CNPJ do pagador
+  </ResponseField>
+
+  <ResponseField name="date" type="string" required>
+    Data/hora do evento em formato ISO 8601
+  </ResponseField>
+
+  <ResponseField name="endToEnd" type="string">
+    Identificador end-to-end do PIX (disponível quando pago)
+  </ResponseField>
+
+  <ResponseField name="providerPayload" type="object">
+    Payload original enviado pelo provedor
+  </ResponseField>
+</Accordion>
+
+### PIX Cash-out - Pagamento Realizado
+
+```json
+{
+  "event": "pix.cashout.paid",
+  "idTransaction": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "statusTransaction": "PAID",
+  "date": "2025-01-01T11:00:00.000Z",
+  "message": null,
+  "value": 200.00,
+  "endToEnd": "E2E123ABC456DEF...",
+  "providerPayload": {
+    "// Payload original do provedor"
+  }
+}
+```
+
+### PIX Cash-out - Pagamento Cancelado
+
+```json
+{
+  "event": "pix.cashout.cancelled",
+  "idTransaction": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "statusTransaction": "CANCELLED",
+  "date": "2025-01-01T11:05:00.000Z",
+  "message": "NOT_PAID",
+  "value": 200.00,
+  "endToEnd": "E2E123ABC456DEF...",
+  "providerPayload": {
+    "// Payload original do provedor"
+  }
+}
+```
+
+<Accordion title="Campos do Payload - Cash-out">
+  <ResponseField name="event" type="string" required>
+    Tipo do evento (`pix.cashout.paid`, `pix.cashout.cancelled`, `pix.cashout.pending`)
+  </ResponseField>
+
+  <ResponseField name="idTransaction" type="string" required>
+    UUID único da transação na StylePay
+  </ResponseField>
+
+  <ResponseField name="statusTransaction" type="string" required>
+    Status atual da transação (`PENDING`, `PAID`, `CANCELLED`)
+  </ResponseField>
+
+  <ResponseField name="date" type="string" required>
+    Data/hora do evento em formato ISO 8601
+  </ResponseField>
+
+  <ResponseField name="message" type="string">
+    Mensagem adicional sobre o status (ex: `NOT_PAID` quando cancelado)
+  </ResponseField>
+
+  <ResponseField name="value" type="number" required>
+    Valor da transação em reais
+  </ResponseField>
+
+  <ResponseField name="endToEnd" type="string">
+    Identificador end-to-end do PIX
+  </ResponseField>
+
+  <ResponseField name="providerPayload" type="object">
+    Payload original enviado pelo provedor
+  </ResponseField>
+</Accordion>
+
+### Refund - Estorno de Depósito
+
+```json
+{
+  "event": "pix.refund.paid_out",
+  "requestNumber": "pedido_123",
+  "statusTransaction": "CANCELLED",
+  "idTransaction": "550e8400-e29b-41d4-a716-446655440000",
+  "typeTransaction": "PIX_REFUND",
+  "value": 100.50,
+  "debtorName": "João Silva",
+  "debtorDocument": "12345678900",
+  "date": "2025-01-01T12:00:00.000Z",
+  "endToEnd": "E2EREFUND123ABC...",
+  "providerPayload": {
+    "// Payload original do provedor MED"
+  }
+}
+```
+
+<Warning>
+  Refunds (estornos) **apenas** ocorrem em transações do tipo `DEPOSIT` (cash-in). Nunca são aplicados em saques (cash-out).
+</Warning>
+
+## Implementação do Endpoint
+
+Seu endpoint deve estar preparado para receber requisições POST da StylePay:
+
+<CodeGroup>
+
+```javascript Node.js/Express
+app.post('/webhook/pix', async (req, res) => {
+  try {
+    const { event, idTransaction, statusTransaction } = req.body;
+    
+    // Verificar se já processou este webhook (idempotência)
+    const exists = await db.webhooks.findOne({ 
+      idTransaction, 
+      event 
+    });
+    
+    if (exists) {
+      return res.status(200).json({ received: true });
+    }
+    
+    // Processar o webhook baseado no evento
+    switch (event) {
+      case 'pix.cashin.paid':
+        await handleCashInPaid(req.body);
+        break;
+      case 'pix.cashout.paid':
+        await handleCashOutPaid(req.body);
+        break;
+      case 'pix.cashout.cancelled':
+        await handleCashOutCancelled(req.body);
+        break;
+      case 'pix.refund.paid_out':
+        await handleRefund(req.body);
+        break;
+    }
+    
+    // Salvar registro do webhook
+    await db.webhooks.create({
+      idTransaction,
+      event,
+      payload: req.body,
+      processedAt: new Date()
+    });
+    
+    // IMPORTANTE: Responder rapidamente
+    res.status(200).json({ received: true });
+    
+  } catch (error) {
+    console.error('Erro ao processar webhook:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
+
+```python Python/Flask
+from flask import Flask, request, jsonify
+from datetime import datetime
+
+app = Flask(__name__)
+
+@app.route('/webhook/pix', methods=['POST'])
+def webhook_pix():
+    try:
+        data = request.get_json()
+        event = data.get('event')
+        id_transaction = data.get('idTransaction')
+        
+        # Verificar idempotência
+        if webhook_exists(id_transaction, event):
+            return jsonify({'received': True}), 200
+        
+        # Processar baseado no evento
+        if event == 'pix.cashin.paid':
+            handle_cashin_paid(data)
+        elif event == 'pix.cashout.paid':
+            handle_cashout_paid(data)
+        elif event == 'pix.cashout.cancelled':
+            handle_cashout_cancelled(data)
+        elif event == 'pix.refund.paid_out':
+            handle_refund(data)
+        
+        # Salvar registro
+        save_webhook(id_transaction, event, data)
+        
+        # Responder rapidamente
+        return jsonify({'received': True}), 200
+        
+    except Exception as e:
+        print(f"Erro ao processar webhook: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+```
+
+```php PHP
+<?php
+
+// webhook.php
+header('Content-Type: application/json');
+
+try {
+    $payload = json_decode(file_get_contents('php://input'), true);
+    
+    $event = $payload['event'];
+    $idTransaction = $payload['idTransaction'];
+    
+    // Verificar idempotência
+    if (webhookExists($idTransaction, $event)) {
+        echo json_encode(['received' => true]);
+        http_response_code(200);
+        exit;
+    }
+    
+    // Processar baseado no evento
+    switch ($event) {
+        case 'pix.cashin.paid':
+            handleCashInPaid($payload);
+            break;
+        case 'pix.cashout.paid':
+            handleCashOutPaid($payload);
+            break;
+        case 'pix.cashout.cancelled':
+            handleCashOutCancelled($payload);
+            break;
+        case 'pix.refund.paid_out':
+            handleRefund($payload);
+            break;
+    }
+    
+    // Salvar registro
+    saveWebhook($idTransaction, $event, $payload);
+    
+    // Responder rapidamente
+    echo json_encode(['received' => true]);
+    http_response_code(200);
+    
+} catch (Exception $e) {
+    error_log("Erro ao processar webhook: " . $e->getMessage());
+    echo json_encode(['error' => 'Internal server error']);
+    http_response_code(500);
+}
+?>
+```
+
+</CodeGroup>
+
+## Boas Práticas
+
+<AccordionGroup>
+  <Accordion title="1. Implemente Idempotência">
+    Webhooks podem ser enviados mais de uma vez. Use uma combinação de `idTransaction + event` como chave única para evitar processamento duplicado.
+    
+    ```javascript
+    const webhookKey = `${idTransaction}-${event}`;
+    if (await cache.exists(webhookKey)) {
+      return res.status(200).json({ received: true });
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="2. Responda Rapidamente">
+    Retorne status 200 em até 5 segundos. Processe lógica complexa de forma assíncrona após responder.
+    
+    ```javascript
+    // Responder primeiro
+    res.status(200).json({ received: true });
+    
+    // Processar depois (não bloqueante)
+    processWebhookAsync(req.body).catch(console.error);
+    ```
+  </Accordion>
+
+  <Accordion title="3. Valide o Evento">
+    Sempre valide o campo `event` antes de processar para garantir que está tratando o tipo correto.
+    
+    ```javascript
+    const validEvents = [
+      'pix.cashin.paid',
+      'pix.cashin.pending',
+      'pix.cashout.paid',
+      'pix.cashout.cancelled',
+      'pix.refund.paid_out'
+    ];
+    
+    if (!validEvents.includes(event)) {
+      console.warn(`Evento desconhecido: ${event}`);
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="4. Registre Logs">
+    Mantenha um log completo de todos os webhooks recebidos para auditoria e debugging.
+    
+    ```javascript
+    await db.webhook_logs.create({
+      idTransaction: data.idTransaction,
+      event: data.event,
+      payload: JSON.stringify(data),
+      receivedAt: new Date(),
+      ipAddress: req.ip
+    });
+    ```
+  </Accordion>
+
+  <Accordion title="5. Segurança">
+    - Mantenha sua URL de webhook privada
+    - Use HTTPS obrigatoriamente
+    - Considere implementar autenticação via header customizado
+    - Valide o formato dos dados recebidos
+    
+    ```javascript
+    // Exemplo de validação de header customizado
+    const webhookSecret = req.headers['x-webhook-secret'];
+    if (webhookSecret !== process.env.WEBHOOK_SECRET) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="6. Tratamento de Erros">
+    Se sua aplicação retornar erro (4xx/5xx), a StylePay pode retentar o envio. Implemente retry logic robusto.
+    
+    ```javascript
+    try {
+      await processWebhook(data);
+    } catch (error) {
+      // Log do erro
+      console.error('Erro:', error);
+      
+      // Se for erro temporário, retorne 5xx para retry
+      if (error.isTemporary) {
+        return res.status(503).json({ error: 'Service temporarily unavailable' });
+      }
+      
+      // Se for erro permanente, retorne 200 para evitar retries
+      return res.status(200).json({ received: true, error: error.message });
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Fluxo de Atualização de Saldo
+
+<Info>
+  A StylePay atualiza automaticamente o saldo da carteira. Os webhooks servem para manter seu sistema sincronizado com essas mudanças.
+</Info>
+
+### Cash-in (Recebimento)
+- Quando `pix.cashin.paid` é recebido, o saldo líquido já foi creditado na carteira StylePay
+
+### Cash-out (Pagamento)
+- No momento da criação, o valor + taxa já foi debitado
+- Se cancelado (`pix.cashout.cancelled`), o valor + taxa é reembolsado automaticamente
+
+### Refund (Estorno)
+- Quando `pix.refund.paid_out` é recebido, o valor líquido já foi debitado da carteira
+
+## Testando Webhooks
+
+Para testar webhooks em desenvolvimento local:
+
+<Steps>
+  <Step title="Use um túnel">
+    Ferramentas como ngrok, localtunnel ou Cloudflare Tunnel para expor sua aplicação local
+    
+    ```bash
+    ngrok http 3000
+    ```
+  </Step>
+  
+  <Step title="Configure a URL">
+    Use a URL pública gerada como `postbackUrl` ou `callbackUrl`
+    
+    ```
+    https://abc123.ngrok.io/webhook/pix
+    ```
+  </Step>
+  
+  <Step title="Monitore os logs">
+    Acompanhe os webhooks chegando em tempo real no seu console
+  </Step>
+</Steps>
+
+## Suporte
+
+Se você tiver problemas com webhooks:
+
+- 📧 Email: suporte@stylepay.com.br
+- 📱 WhatsApp: +55 11 9999-9999
+- 🌐 Portal: https://suporte.stylepay.com.br
