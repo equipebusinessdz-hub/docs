@@ -51,13 +51,13 @@
     "links": [
       {
         "label": "Dashboard StylePay",
-        "href": "https://stylepay.com.br/"
+        "href": "https://app.stylepay.com.br/"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Criar conta",
-      "href": "https://stylepay.com.br/register"
+      "href": "https://app.stylepay.com.br/register"
     }
   },
 
