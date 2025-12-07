@@ -1,22 +1,265 @@
-
-title: Autenticação
-description: Como autenticar chamadas na StylePay API usando chaves de integração.
+---
+title: "Autenticação"
+description: "Aprenda como autenticar suas requisições na API StylePay"
 ---
 
-# Autenticação
+## Visão Geral
 
-A StylePay API utiliza **chaves de integração** enviadas em headers para autenticar cada requisição.
+A API StylePay utiliza um sistema de autenticação baseado em credenciais via headers HTTP customizados. Todas as requisições à API devem incluir suas credenciais de autenticação.
 
-## Headers obrigatórios
+## Credenciais de API
 
-Em todos os endpoints da API pública:
+Para acessar a API, você precisará de duas credenciais:
 
-- `stpi`: Client ID da integração.
-- `stps`: Client Secret da integração.
+<ParamField header="stpi" type="string" required>
+  **Client ID** - Identificador único da sua aplicação
+</ParamField>
 
-Exemplo de requisição autenticada:
+<ParamField header="stps" type="string" required>
+  **Client Secret** - Chave secreta para autenticação
+</ParamField>
 
-```bash
-curl -X GET https://api.seu-dominio.com/api/v1/wallet/balance \
-  -H "stpi: SEU_CLIENT_ID" \
-  -H "stps: SEU_CLIENT_SECRET"
+<Warning>
+  Mantenha suas credenciais seguras! Nunca compartilhe seu **Client Secret** ou o exponha em código cliente (frontend, aplicativos móveis, etc.).
+</Warning>
+
+## Como Obter suas Credenciais
+
+1. Acesse o painel de administração StylePay
+2. Navegue até a seção de **Configurações de API**
+3. Gere ou copie suas credenciais **Client ID** (stpi) e **Client Secret** (stps)
+
+<Note>
+  Se você ainda não possui credenciais, entre em contato com o suporte StylePay para criar uma conta de desenvolvedor.
+</Note>
+
+## Como Autenticar
+
+Inclua suas credenciais no header de todas as requisições HTTP:
+
+<CodeGroup>
+
+```bash cURL
+curl --location 'https://api.stylepay.com.br/api/v1/endpoint' \
+--header 'stpi: seu_client_id' \
+--header 'stps: seu_client_secret' \
+--header 'Content-Type: application/json'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.stylepay.com.br/api/v1/endpoint', {
+  method: 'POST',
+  headers: {
+    'stpi': 'seu_client_id',
+    'stps': 'seu_client_secret',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    // seus dados aqui
+  })
+});
+```
+
+```python Python
+import requests
+
+url = "https://api.stylepay.com.br/api/v1/endpoint"
+
+headers = {
+    "stpi": "seu_client_id",
+    "stps": "seu_client_secret",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(url, headers=headers, json={
+    # seus dados aqui
+})
+```
+
+```php PHP
+<?php
+
+$url = "https://api.stylepay.com.br/api/v1/endpoint";
+
+$headers = [
+    "stpi: seu_client_id",
+    "stps: seu_client_secret",
+    "Content-Type: application/json"
+];
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+    // seus dados aqui
+]));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+?>
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+func main() {
+    url := "https://api.stylepay.com.br/api/v1/endpoint"
+    
+    payload := map[string]interface{}{
+        // seus dados aqui
+    }
+    
+    jsonData, _ := json.Marshal(payload)
+    
+    req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+    req.Header.Set("stpi", "seu_client_id")
+    req.Header.Set("stps", "seu_client_secret")
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, _ := client.Do(req)
+    defer resp.Body.Close()
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'json'
+
+url = URI("https://api.stylepay.com.br/api/v1/endpoint")
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(url)
+request["stpi"] = "seu_client_id"
+request["stps"] = "seu_client_secret"
+request["Content-Type"] = "application/json"
+request.body = {
+  # seus dados aqui
+}.to_json
+
+response = http.request(request)
+```
+
+</CodeGroup>
+
+## Respostas de Autenticação
+
+### Autenticação Bem-Sucedida
+
+Quando suas credenciais são válidas, a API processará sua requisição normalmente e retornará a resposta esperada do endpoint.
+
+### Falha na Autenticação
+
+Se as credenciais forem inválidas ou estiverem ausentes, você receberá um erro 401:
+
+```json
+{
+  "statusCode": 401,
+  "message": "Invalid credentials",
+  "error": "Unauthorized"
+}
+```
+
+## Melhores Práticas de Segurança
+
+<AccordionGroup>
+  <Accordion title="Armazene credenciais com segurança">
+    - Use variáveis de ambiente para armazenar suas credenciais
+    - Nunca faça commit de credenciais no controle de versão (Git)
+    - Use ferramentas de gerenciamento de secrets em produção (AWS Secrets Manager, Azure Key Vault, etc.)
+  </Accordion>
+
+  <Accordion title="Proteja suas requisições">
+    - Sempre use HTTPS para comunicação com a API
+    - Implemente rate limiting em sua aplicação
+    - Monitore o uso da API para detectar atividades suspeitas
+  </Accordion>
+
+  <Accordion title="Rotação de credenciais">
+    - Rotacione suas credenciais periodicamente
+    - Revogue imediatamente credenciais comprometidas
+    - Mantenha credenciais diferentes para ambientes de desenvolvimento e produção
+  </Accordion>
+
+  <Accordion title="Ambiente de desenvolvimento">
+    - Use credenciais de sandbox/teste para desenvolvimento
+    - Nunca use credenciais de produção em ambientes de teste
+    - Limite o acesso às credenciais apenas para membros autorizados da equipe
+  </Accordion>
+</AccordionGroup>
+
+## Ambientes
+
+A API StylePay está disponível nos seguintes ambientes:
+
+| Ambiente | Base URL | Uso |
+|----------|----------|-----|
+| Produção | `https://api.stylepay.com.br` | Transações reais |
+| Sandbox | `https://sandbox-api.stylepay.com.br` | Testes e desenvolvimento |
+
+<Tip>
+  Utilize o ambiente de **Sandbox** para testar sua integração antes de ir para produção. As credenciais são diferentes entre os ambientes.
+</Tip>
+
+## Exemplo Completo
+
+Aqui está um exemplo completo de como fazer uma requisição autenticada:
+
+```javascript
+// Configuração (use variáveis de ambiente)
+const CLIENT_ID = process.env.STYLEPAY_CLIENT_ID;
+const CLIENT_SECRET = process.env.STYLEPAY_CLIENT_SECRET;
+const BASE_URL = 'https://api.stylepay.com.br';
+
+// Função auxiliar para fazer requisições autenticadas
+async function stylePayRequest(endpoint, method = 'GET', body = null) {
+  const options = {
+    method,
+    headers: {
+      'stpi': CLIENT_ID,
+      'stps': CLIENT_SECRET,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}${endpoint}`, options);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Erro na requisição:', error);
+    throw error;
+  }
+}
+
+// Exemplo de uso
+async function consultarSaldo() {
+  const saldo = await stylePayRequest('/api/v1/wallet/balance');
+  console.log('Saldo:', saldo.balance);
+}
+```
+
+## Suporte
+
+Se você tiver problemas com autenticação ou precisar de novas credenciais:
+
+- 📧 Email: suporte@stylepay.com.br
+- 📱 WhatsApp: +55 11 9999-9999
+- 🌐 Portal de Suporte: https://suporte.stylepay.com.br
