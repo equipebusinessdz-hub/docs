@@ -19,17 +19,7 @@
             "group": "Visão geral",
             "pages": [
               "index",
-              "quickstart"
-            ]
-          },
-          {
-            "group": "Funcionalidades",
-            "pages": [
-              "auth",
-              "gerar-qrcode-pix",
-              "pagamento-pix",
-              "wallet",
-              "webhooks"
+              "auth"
             ]
           },
           {
@@ -37,6 +27,13 @@
             "pages": [
               "gerar-qrcode-pix",
               "pagamento-pix"
+            ]
+          },
+          {
+            "group": "Wallet",
+            "pages": [
+              "wallet",
+              "webhooks"
             ]
           }
         ]
