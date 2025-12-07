@@ -1,38 +1,384 @@
 ---
-title: Visão geral
-description: Introdução à StylePay API, casos de uso e visão de alto nível.
+title: "Visão Geral"
+description: "Plataforma completa de pagamentos PIX para sua aplicação"
 ---
 
-# StylePay API
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.png"
+  alt="StylePay Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.png"
+  alt="StylePay Hero Dark"
+/>
 
-A StylePay API permite que plataformas recebam e enviem pagamentos PIX de forma simples e segura, com controle de saldo em carteira, consulta de transações e webhooks em tempo real.
+## Bem-vindo à API StylePay
 
-## Casos de uso
+A StylePay oferece uma infraestrutura completa de pagamentos PIX, permitindo que você receba, envie e gerencie transações com simplicidade e segurança.
 
-- **Receber pagamentos PIX (cash-in)** via QR Code dinâmico.
-- **Realizar pagamentos PIX (cash-out)** para seus clientes.
-- **Consultar saldo de carteira** e **transações**.
-- **Receber notificações via webhook** de atualização de status.
+<CardGroup cols={2}>
+  <Card
+    title="Início Rápido"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Comece a integrar em minutos com nosso guia de início rápido
+  </Card>
+  <Card
+    title="Autenticação"
+    icon="key"
+    href="/authentication"
+  >
+    Configure suas credenciais de API para começar
+  </Card>
+  <Card
+    title="Referência da API"
+    icon="code"
+    href="/api-reference"
+  >
+    Documentação completa de todos os endpoints
+  </Card>
+  <Card
+    title="Webhooks"
+    icon="webhook"
+    href="/webhooks"
+  >
+    Receba notificações em tempo real sobre transações
+  </Card>
+</CardGroup>
 
-## Ambientes
+## Recursos Principais
 
-> Substitua pelos seus domínios reais.
+<AccordionGroup>
+  <Accordion icon="qrcode" title="Gerar QR Code PIX">
+    Crie cobranças PIX instantaneamente com QR Code para seus clientes pagarem de forma rápida e segura.
+    
+    **Recursos:**
+    - QR Code estático ou dinâmico
+    - Valores personalizados
+    - Identificação de pagador
+    - Webhooks de confirmação
+    - Expiração configurável
+  </Accordion>
 
-- **Produção**  
-  `https://api.seu-dominio.com`
+  <Accordion icon="paper-plane" title="Realizar Pagamentos">
+    Envie pagamentos PIX para qualquer chave (CPF, CNPJ, e-mail, telefone ou chave aleatória).
+    
+    **Recursos:**
+    - Pagamento para qualquer chave PIX
+    - Confirmação em tempo real
+    - Rastreamento de transações
+    - Histórico completo
+    - Notificações automáticas
+  </Accordion>
 
-## Autenticação
+  <Accordion icon="wallet" title="Gestão de Carteira">
+    Gerencie o saldo da sua conta e acompanhe todas as movimentações financeiras.
+    
+    **Recursos:**
+    - Consulta de saldo em tempo real
+    - Histórico de transações
+    - Relatórios detalhados
+    - Conciliação automática
+    - Dashboard completo
+  </Accordion>
 
-A autenticação é feita por **chaves de integração** enviadas nos headers:
+  <Accordion icon="bell" title="Webhooks Inteligentes">
+    Receba notificações automáticas sobre todas as mudanças de status nas suas transações.
+    
+    **Recursos:**
+    - Notificações em tempo real
+    - Retry automático
+    - Logs completos
+    - Múltiplas URLs
+    - Segurança integrada
+  </Accordion>
+</AccordionGroup>
 
-- `stpi`: Client ID
-- `stps`: Client Secret
+## Casos de Uso
 
-Esses headers são obrigatórios em todos os endpoints sob `/api/v1/gateway` e `/api/v1/wallet`.
+<CardGroup cols={3}>
+  <Card title="E-commerce" icon="cart-shopping">
+    Integre pagamentos PIX no checkout da sua loja online
+  </Card>
+  <Card title="SaaS" icon="cloud">
+    Automatize cobranças recorrentes e assinaturas
+  </Card>
+  <Card title="Marketplaces" icon="store">
+    Gerencie pagamentos entre compradores e vendedores
+  </Card>
+  <Card title="Aplicativos" icon="mobile">
+    Adicione pagamentos in-app de forma simples
+  </Card>
+  <Card title="Serviços" icon="briefcase">
+    Receba por serviços prestados instantaneamente
+  </Card>
+  <Card title="Transferências" icon="arrow-right-arrow-left">
+    Envie pagamentos para fornecedores e parceiros
+  </Card>
+</CardGroup>
 
-## Fluxo básico
+## Como Funciona
 
-1. Criar uma cobrança PIX (`request-qrcode`).
-2. Esperar o webhook de confirmação de pagamento.
-3. Opcionalmente, consultar o status da transação.
-4. Realizar saques PIX (`pix-payment`) quando necessário.
+<Steps>
+  <Step title="Crie sua conta">
+    Registre-se na plataforma StylePay e obtenha suas credenciais de API (Client ID e Client Secret)
+  </Step>
+  
+  <Step title="Integre a API">
+    Use nossa documentação para integrar os endpoints na sua aplicação em minutos
+  </Step>
+  
+  <Step title="Configure webhooks">
+    Defina URLs para receber notificações automáticas sobre transações
+  </Step>
+  
+  <Step title="Comece a transacionar">
+    Gere QR Codes, envie pagamentos e gerencie sua carteira digital
+  </Step>
+</Steps>
+
+## Tecnologias Suportadas
+
+Integre a StylePay usando sua linguagem de programação favorita:
+
+<CardGroup cols={3}>
+  <Card title="JavaScript" icon="js">
+    Node.js, React, Vue, Angular
+  </Card>
+  <Card title="Python" icon="python">
+    Django, Flask, FastAPI
+  </Card>
+  <Card title="PHP" icon="php">
+    Laravel, Symfony, WordPress
+  </Card>
+  <Card title="Ruby" icon="gem">
+    Rails, Sinatra
+  </Card>
+  <Card title="Go" icon="golang">
+    Gin, Echo, Fiber
+  </Card>
+  <Card title="Java" icon="java">
+    Spring Boot, Quarkus
+  </Card>
+</CardGroup>
+
+## Ambiente de Testes
+
+Teste sua integração sem riscos no nosso ambiente sandbox:
+
+<CodeGroup>
+
+```bash Produção
+https://api.stylepay.com.br
+```
+
+```bash Sandbox
+https://sandbox-api.stylepay.com.br
+```
+
+</CodeGroup>
+
+<Note>
+  Use credenciais diferentes para cada ambiente. Transações em sandbox não movimentam dinheiro real.
+</Note>
+
+## Exemplo Rápido
+
+Veja como é simples gerar um QR Code PIX:
+
+<CodeGroup>
+
+```javascript Node.js
+const response = await fetch('https://api.stylepay.com.br/api/v1/gateway/request-qrcode', {
+  method: 'POST',
+  headers: {
+    'stpi': 'seu_client_id',
+    'stps': 'seu_client_secret',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    amount: 100.50,
+    external_id: "pedido_123",
+    payer: {
+      name: "João Silva",
+      document: "12345678900",
+      email: "joao@email.com"
+    },
+    postbackUrl: "https://seusite.com/webhook"
+  })
+});
+
+const { qrcode, qrcode_image } = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.stylepay.com.br/api/v1/gateway/request-qrcode',
+    headers={
+        'stpi': 'seu_client_id',
+        'stps': 'seu_client_secret',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'amount': 100.50,
+        'external_id': 'pedido_123',
+        'payer': {
+            'name': 'João Silva',
+            'document': '12345678900',
+            'email': 'joao@email.com'
+        },
+        'postbackUrl': 'https://seusite.com/webhook'
+    }
+)
+
+data = response.json()
+qrcode = data['qrcode']
+qrcode_image = data['qrcode_image']
+```
+
+```php PHP
+<?php
+
+$response = file_get_contents('https://api.stylepay.com.br/api/v1/gateway/request-qrcode', false, stream_context_create([
+    'http' => [
+        'method' => 'POST',
+        'header' => [
+            'stpi: seu_client_id',
+            'stps: seu_client_secret',
+            'Content-Type: application/json'
+        ],
+        'content' => json_encode([
+            'amount' => 100.50,
+            'external_id' => 'pedido_123',
+            'payer' => [
+                'name' => 'João Silva',
+                'document' => '12345678900',
+                'email' => 'joao@email.com'
+            ],
+            'postbackUrl' => 'https://seusite.com/webhook'
+        ])
+    ]
+]));
+
+$data = json_decode($response, true);
+$qrcode = $data['qrcode'];
+$qrcode_image = $data['qrcode_image'];
+?>
+```
+
+</CodeGroup>
+
+## Segurança e Conformidade
+
+<CardGroup cols={2}>
+  <Card title="Criptografia SSL/TLS" icon="lock">
+    Todas as requisições são criptografadas com SSL/TLS
+  </Card>
+  <Card title="Conformidade LGPD" icon="shield-check">
+    Totalmente adequado à Lei Geral de Proteção de Dados
+  </Card>
+  <Card title="Autenticação Segura" icon="fingerprint">
+    Sistema de credenciais com Client ID e Secret
+  </Card>
+  <Card title="Auditoria Completa" icon="file-invoice">
+    Logs detalhados de todas as operações
+  </Card>
+</CardGroup>
+
+## Performance e Disponibilidade
+
+<div className="grid grid-cols-3 gap-4 my-8">
+  <div className="text-center p-6 border rounded-lg">
+    <div className="text-4xl font-bold text-primary mb-2">99.9%</div>
+    <div className="text-sm text-gray-600">Uptime</div>
+  </div>
+  <div className="text-center p-6 border rounded-lg">
+    <div className="text-4xl font-bold text-primary mb-2">&lt;200ms</div>
+    <div className="text-sm text-gray-600">Tempo de Resposta</div>
+  </div>
+  <div className="text-center p-6 border rounded-lg">
+    <div className="text-4xl font-bold text-primary mb-2">24/7</div>
+    <div className="text-sm text-gray-600">Suporte</div>
+  </div>
+</div>
+
+## Pricing Transparente
+
+<Tip>
+  Sem mensalidades, sem setup. Você paga apenas pelas transações que processar.
+</Tip>
+
+| Tipo de Transação | Taxa |
+|-------------------|------|
+| PIX Cash-in | 0.99% + R$ 0,10 |
+| PIX Cash-out | R$ 1,50 fixo |
+| Consultas de API | Gratuito |
+| Webhooks | Gratuito |
+
+## Próximos Passos
+
+<CardGroup cols={2}>
+  <Card
+    title="Criar Conta"
+    icon="user-plus"
+    href="https://app.stylepay.com.br/register"
+  >
+    Crie sua conta e obtenha credenciais de API
+  </Card>
+  <Card
+    title="Documentação Completa"
+    icon="book"
+    href="/api-reference"
+  >
+    Explore todos os endpoints disponíveis
+  </Card>
+  <Card
+    title="Comunidade"
+    icon="users"
+    href="https://community.stylepay.com.br"
+  >
+    Participe da nossa comunidade de desenvolvedores
+  </Card>
+  <Card
+    title="Status da API"
+    icon="signal"
+    href="https://status.stylepay.com.br"
+  >
+    Acompanhe o status em tempo real da plataforma
+  </Card>
+</CardGroup>
+
+## Precisa de Ajuda?
+
+Nossa equipe está pronta para ajudar você:
+
+<CardGroup cols={3}>
+  <Card title="Documentação" icon="book-open" href="/docs">
+    Guias completos e tutoriais
+  </Card>
+  <Card title="Suporte" icon="headset" href="mailto:suporte@stylepay.com.br">
+    suporte@stylepay.com.br
+  </Card>
+  <Card title="WhatsApp" icon="whatsapp" href="https://wa.me/5511999999999">
+    +55 11 9999-9999
+  </Card>
+</CardGroup>
+
+---
+
+<div className="text-center mt-12 mb-8">
+  <p className="text-xl font-semibold mb-4">Pronto para começar?</p>
+  <div className="flex justify-center gap-4">
+    <a href="/quickstart" className="btn btn-primary">
+      Guia de Início Rápido →
+    </a>
+    <a href="/api-reference" className="btn btn-secondary">
+      Ver Documentação
+    </a>
+  </div>
+</div>
