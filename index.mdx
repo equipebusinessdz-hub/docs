@@ -5,12 +5,12 @@ description: "Plataforma completa de pagamentos PIX para sua aplicação"
 
 <img
   className="block dark:hidden"
-  src="/images/hero-light.png"
+  src="/logo/logolight.png"
   alt="StylePay Hero Light"
 />
 <img
   className="hidden dark:block"
-  src="/images/hero-dark.png"
+  src="/logo/logodark.png"
   alt="StylePay Hero Dark"
 />
 
@@ -165,25 +165,17 @@ Integre a StylePay usando sua linguagem de programação favorita:
   </Card>
 </CardGroup>
 
-## Ambiente de Testes
+## Base URL da API
 
-Teste sua integração sem riscos no nosso ambiente sandbox:
+Todas as requisições devem ser feitas para:
 
-<CodeGroup>
-
-```bash Produção
+```bash
 https://api.stylepay.com.br
 ```
 
-```bash Sandbox
-https://sandbox-api.stylepay.com.br
-```
-
-</CodeGroup>
-
-<Note>
-  Use credenciais diferentes para cada ambiente. Transações em sandbox não movimentam dinheiro real.
-</Note>
+<Warning>
+  Esta é a API de produção. Todas as transações movimentam dinheiro real. Teste cuidadosamente antes de ir ao ar.
+</Warning>
 
 ## Exemplo Rápido
 
@@ -307,18 +299,22 @@ $qrcode_image = $data['qrcode_image'];
   </div>
 </div>
 
-## Pricing Transparente
+## Taxas
 
 <Tip>
-  Sem mensalidades, sem setup. Você paga apenas pelas transações que processar.
+  Entre em contato com nossa equipe comercial para conhecer as taxas aplicáveis ao seu negócio.
 </Tip>
 
 | Tipo de Transação | Taxa |
 |-------------------|------|
-| PIX Cash-in | 0.99% + R$ 0,10 |
-| PIX Cash-out | R$ 1,50 fixo |
+| PIX Cash-in | A consultar |
+| PIX Cash-out | A consultar |
 | Consultas de API | Gratuito |
 | Webhooks | Gratuito |
+
+<Card title="Falar com Comercial" icon="phone" href="mailto:comercial@stylepay.com.br">
+  comercial@stylepay.com.br
+</Card>
 
 ## Próximos Passos
 
