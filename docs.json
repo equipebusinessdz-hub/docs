@@ -58,8 +58,8 @@
   },
 
   "logo": {
-    "light": "/logo/stylepay-light.svg",
-    "dark": "/logo/stylepay-dark.svg"
+    "light": "/logo/logolight.png",
+    "dark": "/logo/logodark.png"
   },
 
   "navbar": {
