@@ -19,7 +19,8 @@
             "group": "Visão geral",
             "pages": [
               "index",
-              "auth"
+              "auth",
+              "api-reference"
             ]
           },
           {
@@ -34,17 +35,6 @@
             "pages": [
               "wallet",
               "webhooks"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Referência de API",
-        "groups": [
-          {
-            "group": "Endpoints v1",
-            "pages": [
-              "api-reference"
             ]
           }
         ]
