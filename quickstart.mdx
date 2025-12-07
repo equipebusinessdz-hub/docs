@@ -1,0 +1,34 @@
+---
+title: Quickstart
+description: Guia rápido para começar a usar a StylePay API.
+---
+
+# Quickstart
+
+Este guia mostra o fluxo mínimo para integrar com a StylePay API.
+
+## 1. Obter credenciais
+
+1. Acesse o **painel StylePay**.
+2. Gere suas chaves de integração (Client ID e Client Secret).
+3. Guarde:
+   - `stpi` = Client ID
+   - `stps` = Client Secret
+
+## 2. Criar uma cobrança PIX (cash-in)
+
+`POST /api/v1/gateway/request-qrcode`
+
+```bash
+curl -X POST [https://api.seu-dominio.com/api/v1/gateway/request-qrcode](https://api.seu-dominio.com/api/v1/gateway/request-qrcode) \
+  -H "Content-Type: application/json" \
+  -H "stpi: SEU_CLIENT_ID" \
+  -H "stps: SEU_CLIENT_SECRET" \
+  -d '{
+    "amount": 10.50,
+    "payer": {
+      "name": "João Silva",
+      "document": "12345678900"
+    },
+    "postbackUrl": "[https://seu-sistema.com/webhooks/pix](https://seu-sistema.com/webhooks/pix)"
+  }'
