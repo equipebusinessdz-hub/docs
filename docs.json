@@ -1,64 +1,81 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "StylePay API",
+
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
     "dark": "#15803D"
   },
   "favicon": "/favicon.svg",
+
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Guias",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Visão geral",
             "pages": [
               "index",
               "quickstart"
+            ]
+          },
+          {
+            "group": "Funcionalidades",
+            "pages": [
+              "auth",
+              "pix-payments",
+              "wallet",
+              "webhooks"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
-        "groups": []
+        "tab": "Referência de API",
+        "groups": [
+          {
+            "group": "Endpoints v1",
+            "pages": [
+              "reference/gateway",
+              "reference/wallet"
+            ]
+          }
+        ]
       }
     ],
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Status da API",
+          "href": "https://status.seu-dominio.com",
+          "icon": "signal-bars"
         }
       ]
     }
   },
+
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/stylepay-light.svg",
+    "dark": "/logo/stylepay-dark.svg"
   },
+
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Dashboard StylePay",
+        "href": "https://seu-dominio.com/painel"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Criar conta",
+      "href": "https://seu-dominio.com/registre-se"
     }
   },
+
   "contextual": {
     "options": [
       "copy",
@@ -73,9 +90,9 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/stylepay",
+      "github": "https://github.com/seu-org/stylepay-api",
+      "linkedin": "https://linkedin.com/company/stylepay"
     }
   }
 }
