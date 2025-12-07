@@ -8,7 +8,7 @@
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.png",
 
   "navigation": {
     "tabs": [
@@ -16,7 +16,7 @@
         "tab": "Guias",
         "groups": [
           {
-            "group": "Visão geral",
+            "group": "Inicio",
             "pages": [
               "index",
               "auth",
@@ -39,16 +39,7 @@
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Status da API",
-          "href": "https://status.seu-dominio.com",
-          "icon": "signal-bars"
-        }
-      ]
-    }
+    ]
   },
 
   "logo": {
@@ -60,13 +51,13 @@
     "links": [
       {
         "label": "Dashboard StylePay",
-        "href": "https://seu-dominio.com/painel"
+        "href": "https://stylepay.com.br/"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Criar conta",
-      "href": "https://seu-dominio.com/registre-se"
+      "href": "https://stylepay.com.br/register"
     }
   },
 
@@ -84,9 +75,7 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/stylepay",
-      "github": "https://github.com/seu-org/stylepay-api",
-      "linkedin": "https://linkedin.com/company/stylepay"
+      "instagram": "https://instagram.com/stylepay.com.br"
     }
   }
 }
