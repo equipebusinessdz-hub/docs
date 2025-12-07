@@ -1,0 +1,177 @@
+---
+title: "Consultar Saldo"
+api: "GET https://api.stylepay.com.br/api/v1/wallet/balance"
+description: "Consulta o saldo disponível na carteira"
+---
+
+## Autenticação
+
+Esta requisição requer autenticação via headers customizados:
+
+<ParamField header="stpi" type="string" required>
+  Seu Client ID
+</ParamField>
+
+<ParamField header="stps" type="string" required>
+  Seu Client Secret
+</ParamField>
+
+## Resposta
+
+<ResponseField name="balance" type="number">
+  Saldo disponível na carteira em reais (BRL)
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location 'https://api.stylepay.com.br/api/v1/wallet/balance' \
+--header 'stpi: seu_client_id' \
+--header 'stps: seu_client_secret'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.stylepay.com.br/api/v1/wallet/balance', {
+  method: 'GET',
+  headers: {
+    'stpi': 'seu_client_id',
+    'stps': 'seu_client_secret'
+  }
+});
+
+const data = await response.json();
+console.log(`Saldo: R$ ${data.balance}`);
+```
+
+```python Python
+import requests
+
+url = "https://api.stylepay.com.br/api/v1/wallet/balance"
+
+headers = {
+    "stpi": "seu_client_id",
+    "stps": "seu_client_secret"
+}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+
+print(f"Saldo: R$ {data['balance']}")
+```
+
+```php PHP
+<?php
+
+$url = "https://api.stylepay.com.br/api/v1/wallet/balance";
+
+$headers = [
+    "stpi: seu_client_id",
+    "stps: seu_client_secret"
+];
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$data = json_decode($response, true);
+echo "Saldo: R$ " . $data['balance'];
+?>
+```
+
+```go Go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+)
+
+type BalanceResponse struct {
+    Balance float64 `json:"balance"`
+}
+
+func main() {
+    url := "https://api.stylepay.com.br/api/v1/wallet/balance"
+    
+    req, _ := http.NewRequest("GET", url, nil)
+    req.Header.Set("stpi", "seu_client_id")
+    req.Header.Set("stps", "seu_client_secret")
+    
+    client := &http.Client{}
+    resp, _ := client.Do(req)
+    defer resp.Body.Close()
+    
+    body, _ := io.ReadAll(resp.Body)
+    
+    var balance BalanceResponse
+    json.Unmarshal(body, &balance)
+    
+    fmt.Printf("Saldo: R$ %.2f\n", balance.Balance)
+}
+```
+
+```ruby Ruby
+require 'net/http'
+require 'json'
+
+url = URI("https://api.stylepay.com.br/api/v1/wallet/balance")
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request["stpi"] = "seu_client_id"
+request["stps"] = "seu_client_secret"
+
+response = http.request(request)
+data = JSON.parse(response.body)
+
+puts "Saldo: R$ #{data['balance']}"
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json 200 - Success
+{
+  "balance": 1500.50
+}
+```
+
+```json 401 - Unauthorized
+{
+  "statusCode": 401,
+  "message": "Invalid credentials",
+  "error": "Unauthorized"
+}
+```
+
+```json 500 - Internal Server Error
+{
+  "statusCode": 500,
+  "message": "Internal server error",
+  "error": "Internal Server Error"
+}
+```
+
+</ResponseExample>
+
+## Notas Importantes
+
+<Info>
+  O saldo retornado representa o valor disponível em reais (BRL) na sua carteira StylePay.
+</Info>
+
+<Note>
+  Este endpoint não requer parâmetros adicionais além dos headers de autenticação.
+</Note>
+
+<Tip>
+  Recomendamos consultar o saldo antes de realizar operações de pagamento para garantir fundos suficientes.
+</Tip>
