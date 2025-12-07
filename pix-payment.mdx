@@ -1,0 +1,64 @@
+---
+title: Pagamentos PIX
+description: Como criar cobranças PIX (cash-in) e realizar pagamentos PIX (cash-out).
+---
+
+# Pagamentos PIX
+
+A StylePay API oferece dois fluxos principais de PIX:
+
+- **Cash-in** (entrada de dinheiro via QR Code).
+- **Cash-out** (saques PIX para contas externas).
+
+## Cash-in – Criar QR Code
+
+**Endpoint**
+
+`POST /api/v1/gateway/request-qrcode`
+
+**Parâmetros principais**
+
+- `amount` (number) – valor em reais.
+- `payer` (objeto)
+  - `name` (string) – nome do pagador.
+  - `document` (string) – CPF/CNPJ.
+- `postbackUrl` (string, opcional) – URL para receber o webhook.
+
+**Resposta (resumo)**
+
+- `payment_id` – ID interno da transação.
+- `qrcode` – código copia e cola.
+- `qrcode_image` – imagem em base64.
+- `status` – status inicial (`PENDING`).
+
+## Cash-out – Pagamento PIX
+
+**Endpoint**
+
+`POST /api/v1/gateway/pix-payment`
+
+**Parâmetros principais**
+
+- `amount` (number) – valor em reais.
+- `description` (string) – descrição do pagamento.
+- `creditParty` (objeto)
+  - `name` – nome do destinatário.
+  - `keyType` – tipo de chave (CPF, CNPJ, EMAIL, PHONE, EVP).
+  - `key` – chave PIX.
+- `callbackUrl` (string, opcional) – URL para webhook de cash-out.
+
+**Resposta (resumo)**
+
+- `transaction_id` – ID da transação.
+- `external_id` – ID externo gerado.
+- `end2end_id` – identificador PIX.
+- `amount` – valor líquido.
+- `tax` – valor de taxas.
+- `status` – `PENDING`, `PAID`, etc.
+
+## Status principais
+
+- `PENDING` – aguardando pagamento/processamento.
+- `PAID` – pago com sucesso.
+- `CANCELLED` – cancelado/estornado.
+- `REFUNDED` / `REVERSED` – devolvido (quando aplicável).
