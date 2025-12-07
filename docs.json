@@ -44,8 +44,7 @@
           {
             "group": "Endpoints v1",
             "pages": [
-              "reference/gateway",
-              "reference/wallet"
+              "api-reference"
             ]
           }
         ]
