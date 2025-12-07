@@ -1,0 +1,311 @@
+---
+title: "Gerar QR Code PIX"
+api: "POST https://api.stylepay.com.br/api/v1/gateway/request-qrcode"
+description: "Gera um QR Code PIX para cobrança"
+---
+
+## Autenticação
+
+Esta requisição requer autenticação via headers customizados:
+
+<ParamField header="stpi" type="string" required>
+  Seu Client ID
+</ParamField>
+
+<ParamField header="stps" type="string" required>
+  Seu Client Secret
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required default="application/json">
+  Tipo do conteúdo da requisição
+</ParamField>
+
+## Corpo da Requisição
+
+<ParamField body="amount" type="number" required>
+  Valor da cobrança em reais (ex: 10.50)
+</ParamField>
+
+<ParamField body="external_id" type="string" required>
+  Identificador externo do pedido/transação
+</ParamField>
+
+<ParamField body="payer" type="object" required>
+  Informações do pagador
+  
+  <Expandable title="Propriedades">
+    <ParamField body="payer.name" type="string" required>
+      Nome completo do pagador
+    </ParamField>
+    
+    <ParamField body="payer.document" type="string" required>
+      CPF ou CNPJ do pagador (somente números)
+    </ParamField>
+    
+    <ParamField body="payer.phoneNumber" type="string" required>
+      Telefone do pagador com DDD
+    </ParamField>
+    
+    <ParamField body="payer.email" type="string" required>
+      E-mail do pagador
+    </ParamField>
+    
+    <ParamField body="payer.address" type="object" required>
+      Endereço do pagador
+      
+      <Expandable title="Propriedades">
+        <ParamField body="payer.address.street" type="string" required>
+          Nome da rua
+        </ParamField>
+        
+        <ParamField body="payer.address.number" type="string" required>
+          Número do endereço
+        </ParamField>
+        
+        <ParamField body="payer.address.neighborhood" type="string" required>
+          Bairro
+        </ParamField>
+        
+        <ParamField body="payer.address.city" type="string" required>
+          Cidade
+        </ParamField>
+        
+        <ParamField body="payer.address.state" type="string" required>
+          Estado (UF)
+        </ParamField>
+        
+        <ParamField body="payer.address.zipCode" type="string" required>
+          CEP (somente números)
+        </ParamField>
+      </Expandable>
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="payerQuestion" type="string" required>
+  Descrição ou mensagem da cobrança
+</ParamField>
+
+<ParamField body="postbackUrl" type="string" required>
+  URL para receber notificações de webhook sobre o status do pagamento
+</ParamField>
+
+<ParamField body="products" type="array" required>
+  Lista de produtos da cobrança
+  
+  <Expandable title="Propriedades do item">
+    <ParamField body="products[].name" type="string" required>
+      Nome do produto
+    </ParamField>
+    
+    <ParamField body="products[].quantity" type="string" required>
+      Quantidade do produto
+    </ParamField>
+    
+    <ParamField body="products[].price" type="number" required>
+      Preço unitário do produto
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Resposta
+
+<ResponseField name="payment_id" type="string">
+  UUID único da transação gerada
+</ResponseField>
+
+<ResponseField name="qrcode_image" type="string">
+  Imagem do QR Code em formato Base64
+</ResponseField>
+
+<ResponseField name="qrcode" type="string">
+  Código PIX copia e cola (payload do QR Code)
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Status inicial do pagamento (geralmente "PENDING")
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location 'https://api.stylepay.com.br/api/v1/gateway/request-qrcode' \
+--header 'stpi: seu_client_id' \
+--header 'stps: seu_client_secret' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "amount": 10.50,
+  "external_id": "pedido_123",
+  "payer": {
+    "name": "João Silva",
+    "document": "12345678900",
+    "phoneNumber": "11999999999",
+    "email": "joao@email.com",
+    "address": {
+      "street": "Rua Exemplo",
+      "number": "123",
+      "neighborhood": "Centro",
+      "city": "São Paulo",
+      "state": "SP",
+      "zipCode": "01234567"
+    }
+  },
+  "payerQuestion": "Pagamento do pedido #123",
+  "postbackUrl": "https://seusite.com/webhook/pix",
+  "products": [
+    {
+      "name": "Produto 1",
+      "quantity": "2",
+      "price": 5.25
+    }
+  ]
+}'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.stylepay.com.br/api/v1/gateway/request-qrcode', {
+  method: 'POST',
+  headers: {
+    'stpi': 'seu_client_id',
+    'stps': 'seu_client_secret',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    amount: 10.50,
+    external_id: "pedido_123",
+    payer: {
+      name: "João Silva",
+      document: "12345678900",
+      phoneNumber: "11999999999",
+      email: "joao@email.com",
+      address: {
+        street: "Rua Exemplo",
+        number: "123",
+        neighborhood: "Centro",
+        city: "São Paulo",
+        state: "SP",
+        zipCode: "01234567"
+      }
+    },
+    payerQuestion: "Pagamento do pedido #123",
+    postbackUrl: "https://seusite.com/webhook/pix",
+    products: [
+      {
+        name: "Produto 1",
+        quantity: "2",
+        price: 5.25
+      }
+    ]
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+import json
+
+url = "https://api.stylepay.com.br/api/v1/gateway/request-qrcode"
+
+headers = {
+    "stpi": "seu_client_id",
+    "stps": "seu_client_secret",
+    "Content-Type": "application/json"
+}
+
+payload = {
+    "amount": 10.50,
+    "external_id": "pedido_123",
+    "payer": {
+        "name": "João Silva",
+        "document": "12345678900",
+        "phoneNumber": "11999999999",
+        "email": "joao@email.com",
+        "address": {
+            "street": "Rua Exemplo",
+            "number": "123",
+            "neighborhood": "Centro",
+            "city": "São Paulo",
+            "state": "SP",
+            "zipCode": "01234567"
+        }
+    },
+    "payerQuestion": "Pagamento do pedido #123",
+    "postbackUrl": "https://seusite.com/webhook/pix",
+    "products": [
+        {
+            "name": "Produto 1",
+            "quantity": "2",
+            "price": 5.25
+        }
+    ]
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(payload))
+```
+
+```php PHP
+<?php
+
+$url = "https://api.stylepay.com.br/api/v1/gateway/request-qrcode";
+
+$headers = [
+    "stpi: seu_client_id",
+    "stps: seu_client_secret",
+    "Content-Type: application/json"
+];
+
+$payload = [
+    "amount" => 10.50,
+    "external_id" => "pedido_123",
+    "payer" => [
+        "name" => "João Silva",
+        "document" => "12345678900",
+        "phoneNumber" => "11999999999",
+        "email" => "joao@email.com",
+        "address" => [
+            "street" => "Rua Exemplo",
+            "number" => "123",
+            "neighborhood" => "Centro",
+            "city" => "São Paulo",
+            "state" => "SP",
+            "zipCode" => "01234567"
+        ]
+    ],
+    "payerQuestion" => "Pagamento do pedido #123",
+    "postbackUrl" => "https://seusite.com/webhook/pix",
+    "products" => [
+        [
+            "name" => "Produto 1",
+            "quantity" => "2",
+            "price" => 5.25
+        ]
+    ]
+];
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+?>
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json 201 - Success
+{
+  "payment_id": "550e8400-e29b-41d4-a716-446655440000",
+  "qrcode_image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+  "qrcode": "00020126580014br.gov.bcb.pix0136123e4567-e12b-12d3-a456-42665544000052040000530398654041.005802BR5913MERCHANT NAME6009SAO PAULO62070503***63041D3D",
+  "status": "PENDING"
+}
+```
+
+</ResponseExample>

@@ -26,7 +26,7 @@
             "group": "Funcionalidades",
             "pages": [
               "auth",
-              "pix-payments",
+              "gerar-qrcode-pix",
               "wallet",
               "webhooks"
             ]
