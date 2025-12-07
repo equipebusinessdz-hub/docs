@@ -1,0 +1,28 @@
+
+---
+
+## `pages/auth.mdx` – Autenticação
+
+```mdx
+---
+title: Autenticação
+description: Como autenticar chamadas na StylePay API usando chaves de integração.
+---
+
+# Autenticação
+
+A StylePay API utiliza **chaves de integração** enviadas em headers para autenticar cada requisição.
+
+## Headers obrigatórios
+
+Em todos os endpoints da API pública:
+
+- `stpi`: Client ID da integração.
+- `stps`: Client Secret da integração.
+
+Exemplo de requisição autenticada:
+
+```bash
+curl -X GET https://api.seu-dominio.com/api/v1/wallet/balance \
+  -H "stpi: SEU_CLIENT_ID" \
+  -H "stps: SEU_CLIENT_SECRET"
