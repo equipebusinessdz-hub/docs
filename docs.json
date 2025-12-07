@@ -27,6 +27,7 @@
             "pages": [
               "auth",
               "gerar-qrcode-pix",
+              "pagamento-pix",
               "wallet",
               "webhooks"
             ]
