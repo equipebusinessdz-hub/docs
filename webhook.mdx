@@ -1,0 +1,29 @@
+---
+title: Webhooks
+description: Como a StylePay envia notificações de PIX Cash-in, Cash-out e Refund (MED).
+---
+
+# Webhooks
+
+## PIX Cash-in
+
+**Evento**: `pix.cashin.paid`
+
+### Payload enviado pela StylePay
+
+```json
+{
+  "event": "pix.cashin.paid",
+  "requestNumber": "SEU_EXTERNAL_ID",
+  "statusTransaction": "PAID",
+  "idTransaction": "UUID_DA_TRANSACAO",
+  "typeTransaction": "PIX",
+  "value": 100.5,
+  "debtorName": "João Silva",
+  "debtorDocument": "12345678900",
+  "date": "2025-01-01T10:02:00.000Z",
+  "endToEnd": "E2E9A8B7C6D5...",
+  "providerPayload": {
+    "...": "payload original enviado pelo provedor"
+  }
+}
