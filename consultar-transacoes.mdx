@@ -1,7 +1,7 @@
 ---
 title: "Consultar Transação"
 api: "POST https://api.stylepay.com.br/api/v1/wallet/transaction"
-description: "Consulta o status e detalhes de uma transação específica via ID da transação ou ID externo."
+description: "Consulta o status e detalhes de uma transação específica via ID da transação, ID externo ou ambos."
 ---
 
 ## Autenticação
@@ -24,7 +24,7 @@ Esta requisição requer autenticação via headers customizados:
 
 Você deve enviar um corpo em JSON informando qual transação deseja buscar.
 
-Envie **apenas um** dos campos abaixo: `payment_id` ou `external_id`.
+A consulta aceita `payment_id`, `external_id` ou os dois campos juntos.
 
 <ParamField body="payment_id" type="string">
   O ID único da transação gerado pela StylePay.
@@ -33,6 +33,8 @@ Envie **apenas um** dos campos abaixo: `payment_id` ou `external_id`.
 <ParamField body="external_id" type="string">
   O seu ID da transação, usado como referência externa gerada pelo seu sistema.
 </ParamField>
+
+Quando `payment_id` e `external_id` forem enviados juntos, ambos devem corresponder à mesma transação.
 
 ## Resposta
 
@@ -82,6 +84,7 @@ curl --location 'https://api.stylepay.com.br/api/v1/wallet/transaction' \
   --header 'stps: seu_client_secret' \
   --header 'Content-Type: application/json' \
   --data '{
+    "payment_id": "1e6c9f53-fddb-4994-bc02-fd6fe61007fa",
     "external_id": "pedido-1010"
   }'
 ```
@@ -95,10 +98,8 @@ const response = await fetch('https://api.stylepay.com.br/api/v1/wallet/transact
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
+    payment_id: '1e6c9f53-fddb-4994-bc02-fd6fe61007fa',
     external_id: 'pedido-1010'
-
-    // Para consultar pelo ID da StylePay, envie assim:
-    // payment_id: '1e6c9f53-fddb-4994-bc02-fd6fe61007fa'
   })
 });
 
@@ -125,10 +126,8 @@ headers = {
 }
 
 payload = {
+    "payment_id": "1e6c9f53-fddb-4994-bc02-fd6fe61007fa",
     "external_id": "pedido-1010"
-
-    # Para consultar pelo ID da StylePay, envie assim:
-    # "payment_id": "1e6c9f53-fddb-4994-bc02-fd6fe61007fa"
 }
 
 response = requests.post(url, headers=headers, json=payload)
@@ -154,10 +153,8 @@ $headers = [
 ];
 
 $body = json_encode([
+    "payment_id" => "1e6c9f53-fddb-4994-bc02-fd6fe61007fa",
     "external_id" => "pedido-1010"
-
-    // Para consultar pelo ID da StylePay, envie assim:
-    // "payment_id" => "1e6c9f53-fddb-4994-bc02-fd6fe61007fa"
 ]);
 
 $ch = curl_init($url);
@@ -206,7 +203,14 @@ if (isset($json["data"])) {
 ```json 400
 {
   "statusCode": 400,
-  "message": "Informe 'payment_id' ou 'external_id' para buscar a transação."
+  "message": "Informe 'payment_id', 'external_id' ou ambos para buscar a transação."
+}
+```
+
+```json 400
+{
+  "statusCode": 400,
+  "message": "O 'payment_id' e o 'external_id' informados não correspondem à mesma transação."
 }
 ```
 
