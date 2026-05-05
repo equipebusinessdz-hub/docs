@@ -1,0 +1,199 @@
+---
+title: "Consultar Transação"
+api: "POST https://api.stylepay.com.br/api/v1/wallet/transaction"
+description: "Consulta o status e detalhes de uma transação específica via ID da transação ou ID externo."
+---
+
+## Autenticação
+
+Esta requisição requer autenticação via headers customizados:
+
+<ParamField header="stpi" type="string" required>
+  Seu Client ID.
+</ParamField>
+
+<ParamField header="stps" type="string" required>
+  Seu Client Secret.
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Envie sempre como `application/json`.
+</ParamField>
+
+## Body
+
+Você deve enviar um corpo em JSON detalhando qual transação deseja buscar. É obrigatório enviar **pelo menos um** dos parâmetros abaixo.
+
+<ParamField body="payment_id" type="string">
+  O ID único da transação gerado pela StylePay.
+</ParamField>
+
+<ParamField body="external_id" type="string">
+  O seu ID da transação, usado como referência externa gerada pelo seu sistema.
+</ParamField>
+
+## Resposta
+
+<ResponseField name="payment_id" type="string">
+  O ID único da transação na StylePay.
+</ResponseField>
+
+<ResponseField name="external_id" type="string">
+  O seu ID da transação, usado como referência externa.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  O status atual da transação. Valores possíveis: `PENDING`, `PAID`, `CANCELLED`, `REFUNDED`, `REVERSED`.
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  O valor bruto da transação em reais.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  Data de criação da transação no formato ISO 8601.
+</ResponseField>
+
+<ResponseField name="confirmed_date" type="string">
+  Data de confirmação do pagamento no formato ISO 8601. Retorna `null` quando a transação ainda não foi paga.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location 'https://api.stylepay.com.br/api/v1/wallet/transaction' \
+  --header 'stpi: seu_client_id' \
+  --header 'stps: seu_client_secret' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "external_id": "pedido-1010"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.stylepay.com.br/api/v1/wallet/transaction', {
+  method: 'POST',
+  headers: {
+    stpi: 'seu_client_id',
+    stps: 'seu_client_secret',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    external_id: 'pedido-1010'
+  })
+});
+
+const json = await response.json();
+
+if (response.ok) {
+  console.log(`Transação ${json.payment_id} está com status: ${json.status}`);
+} else {
+  console.error(`Erro: ${json.message}`);
+}
+```
+
+```python Python
+import requests
+
+url = "https://api.stylepay.com.br/api/v1/wallet/transaction"
+
+headers = {
+    "stpi": "seu_client_id",
+    "stps": "seu_client_secret",
+    "Content-Type": "application/json"
+}
+
+payload = {
+    "external_id": "pedido-1010"
+}
+
+response = requests.post(url, headers=headers, json=payload)
+data = response.json()
+
+if response.status_code == 200:
+    print(f"Transação {data['payment_id']} está com status: {data['status']}")
+else:
+    print(f"Erro: {data.get('message', 'Erro desconhecido')}")
+```
+
+```php PHP
+<?php
+
+$url = "https://api.stylepay.com.br/api/v1/wallet/transaction";
+
+$headers = [
+    "stpi: seu_client_id",
+    "stps: seu_client_secret",
+    "Content-Type: application/json"
+];
+
+$body = json_encode([
+    "external_id" => "pedido-1010"
+]);
+
+$ch = curl_init($url);
+
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+
+$response = curl_exec($ch);
+
+curl_close($ch);
+
+$json = json_decode($response, true);
+
+if (isset($json["payment_id"])) {
+    echo "Transação " . $json["payment_id"] . " está com status: " . $json["status"];
+} else {
+    echo "Erro: " . $json["message"];
+}
+
+?>
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json 200
+{
+  "payment_id": "1e6c9f53-fddb-4994-bc02-fd6fe61007fa",
+  "external_id": "pedido-1010",
+  "status": "PAID",
+  "amount": 150.00,
+  "created_at": "2026-05-05T10:00:00.000Z",
+  "confirmed_date": "2026-05-05T10:02:15.000Z"
+}
+```
+
+```json 400
+{
+  "statusCode": 400,
+  "message": "Informe 'payment_id' ou 'external_id' para buscar a transação."
+}
+```
+
+```json 401
+{
+  "statusCode": 401,
+  "message": "Falha na autenticação."
+}
+```
+
+```json 404
+{
+  "statusCode": 404,
+  "message": "Transação não encontrada."
+}
+```
+
+```json 500
+{
+  "statusCode": 500,
+  "message": "Erro interno."
+}
+```
+
+</ResponseExample>

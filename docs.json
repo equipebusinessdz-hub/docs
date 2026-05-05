@@ -33,7 +33,8 @@
           {
             "group": "Wallet",
             "pages": [
-              "wallet"
+              "wallet",
+              "consultar-transacoes"
             ]
           },
           {
