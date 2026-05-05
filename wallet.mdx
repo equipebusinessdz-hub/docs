@@ -39,7 +39,8 @@ Esta requisição requer autenticação via headers customizados:
 curl --location 'https://api.stylepay.com.br/api/v1/wallet/balance' \
   --header 'stpi: seu_client_id' \
   --header 'stps: seu_client_secret'
-javascript
+```
+```javascript
 const response = await fetch('https://api.stylepay.com.br/api/v1/wallet/balance', {
   method: 'GET',
   headers: {
@@ -51,7 +52,8 @@ const json = await response.json();
 // Dividimos por 100 para exibição
 const saldoReais = json.data.available_cents / 100;
 console.log(`Saldo disponível: R$ ${saldoReais.toFixed(2)}`);
-python
+```
+```python
 import requests
 url = "https://api.stylepay.com.br/api/v1/wallet/balance"
 headers = {
@@ -62,7 +64,8 @@ response = requests.get(url, headers=headers)
 data = response.json()
 saldo_reais = data['data']['available_cents'] / 100
 print(f"Saldo disponível: R$ {saldo_reais:.2f}")
-php
+```
+```php
 <?php
 $url = "https://api.stylepay.com.br/api/v1/wallet/balance";
 $headers = [
@@ -78,7 +81,8 @@ $json = json_decode($response, true);
 $saldo_reais = $json['data']['available_cents'] / 100;
 echo "Saldo disponível: R$ " . number_format($saldo_reais, 2, ',', '.');
 ?>
-go
+```
+```go
 package main
 import (
     "encoding/json"
@@ -111,7 +115,8 @@ func main() {
     saldoReais := float64(responseData.Data.AvailableCents) / 100.0
     fmt.Printf("Saldo disponível: R$ %.2f\n", saldoReais)
 }
-ruby
+```
+```ruby
 require 'net/http'
 require 'json'
 url = URI("https://api.stylepay.com.br/api/v1/wallet/balance")
@@ -124,7 +129,8 @@ response = http.request(request)
 json = JSON.parse(response.body)
 saldo_reais = json['data']['available_cents'] / 100.0
 puts "Saldo disponível: R$ #{sprintf('%.2f', saldo_reais)}"
-json
+```
+```json
 {
   "statusCode": 200,
   "message": "Saldo consultado com sucesso.",
@@ -134,14 +140,17 @@ json
   },
   "timestamp": "2026-05-05T00:12:45-03:00"
 }
-json
+```
+```json
 {
   "statusCode": 401,
   "message": "Falha na autenticação"
 }
-json
+```
+```json
 {
   "statusCode": 500,
   "message": "Erro interno"
 }
 ```
+</RequestExample>
