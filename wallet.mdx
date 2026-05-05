@@ -1,7 +1,7 @@
 ---
 title: "Consultar Saldo"
 api: "GET https://api.stylepay.com.br/api/v1/wallet/balance"
-description: "Consulta o saldo disponível na carteira"
+description: "Consulta o saldo disponível na carteira correspondente (disponível para saque e movimentações)"
 ---
 
 ## Autenticação
@@ -18,45 +18,29 @@ Esta requisição requer autenticação via headers customizados:
 
 ## Resposta
 
-A resposta retorna detalhes do saldo tanto em **reais (BRL)** quanto em **centavos**, além da moeda e data da última atualização.
-
 <ResponseField name="statusCode" type="number">
   Código de status HTTP da requisição (ex: 200).
 </ResponseField>
 
 <ResponseField name="message" type="string">
-  Mensagem descritiva (ex: "Saldo consultado com sucesso").
+  Mensagem descritiva (ex: "Saldo consultado com sucesso.").
 </ResponseField>
 
 <ResponseField name="data" type="object">
   Objeto contendo os dados do saldo.
   <Expandable title="propriedades">
-    <ResponseField name="user_id" type="number">
-      ID do usuário autenticado.
-    </ResponseField>
-    <ResponseField name="balance_cents" type="number">
-      Saldo total em centavos.
-    </ResponseField>
     <ResponseField name="available_cents" type="number">
-      Saldo disponível para saque/transações em centavos.
-    </ResponseField>
-    <ResponseField name="balance" type="number">
-      Saldo total formatado em reais (BRL).
-    </ResponseField>
-    <ResponseField name="available" type="number">
-      Saldo disponível formatado em reais (BRL).
+      Saldo disponível para uso imediato ou saque **em centavos** (inteiro).  
+      **Dica:** Sempre divida este valor por 100 no front-end para exibir o valor em Reais (R$).
     </ResponseField>
     <ResponseField name="currency" type="string">
-      Moeda da carteira (padrão: "BRL").
-    </ResponseField>
-    <ResponseField name="last_updated" type="string">
-      Data e hora (ISO 8601) da última movimentação.
+      Moeda referente ao saldo da carteira (padrão: "BRL").
     </ResponseField>
   </Expandable>
 </ResponseField>
 
 <ResponseField name="timestamp" type="string">
-  Data e hora (ISO 8601) da consulta.
+  Data e hora (ISO 8601) da consulta do saldo.
 </ResponseField>
 
 <RequestExample>
@@ -65,5 +49,3 @@ A resposta retorna detalhes do saldo tanto em **reais (BRL)** quanto em **centav
 curl --location 'https://api.stylepay.com.br/api/v1/wallet/balance' \
 --header 'stpi: seu_client_id' \
 --header 'stps: seu_client_secret'
-```
-</RequestExample>
