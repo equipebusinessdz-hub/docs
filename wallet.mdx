@@ -30,7 +30,7 @@ Esta requisição requer autenticação via headers customizados:
   Objeto contendo os dados do saldo.
   <Expandable title="propriedades">
     <ResponseField name="available_cents" type="number">
-      Saldo disponível para uso imediato ou saque **em centavos** (inteiro).  
+      Saldo disponível para uso imediato ou saque **em centavos** (inteiro).
       **Dica:** Sempre divida este valor por 100 no front-end para exibir o valor em Reais (R$).
     </ResponseField>
     <ResponseField name="currency" type="string">
@@ -49,3 +49,6 @@ Esta requisição requer autenticação via headers customizados:
 curl --location 'https://api.stylepay.com.br/api/v1/wallet/balance' \
 --header 'stpi: seu_client_id' \
 --header 'stps: seu_client_secret'
+```
+
+</RequestExample>
