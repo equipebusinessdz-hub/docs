@@ -27,7 +27,8 @@
             "group": "Pagamentos",
             "pages": [
               "gerar-qrcode-pix",
-              "pagamento-pix"
+              "pagamento-pix",
+              "split-de-pagamentos"
             ]
           },
           {

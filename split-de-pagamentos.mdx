@@ -1,0 +1,291 @@
+---
+title: "Split de Pagamentos"
+api: "POST https://api.stylepay.com.br/api/v1/gateway/payment"
+description: "Crie uma cobrança com divisão automática de valores entre uma ou mais contas recebedoras."
+---
+
+## Visão geral
+
+O **Split de Pagamentos** permite dividir automaticamente o valor líquido de uma transação entre múltiplas contas StylePay.
+
+O split é processado no momento da liquidação da transação, ou seja, quando o pagamento for confirmado.
+
+<Warning>
+  As taxas da StylePay são descontadas antes da distribuição dos valores entre os recebedores.
+</Warning>
+
+## Autenticação
+
+Esta requisição requer autenticação via headers customizados:
+
+<ParamField header="stpi" type="string" required>
+  Seu Client ID.
+</ParamField>
+
+<ParamField header="stps" type="string" required>
+  Seu Client Secret.
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Envie sempre como `application/json`.
+</ParamField>
+
+## Body
+
+<ParamField body="amount" type="number" required>
+  Valor total da transação em reais. Exemplo: `100.00`.
+</ParamField>
+
+<ParamField body="payment_method" type="string" required>
+  Método de pagamento da transação. Exemplo: `"PIX"`.
+</ParamField>
+
+<ParamField body="split_rules" type="array">
+  Lista opcional de regras para divisão automática do valor líquido da transação.
+
+  Se este campo não for enviado, o valor líquido será creditado integralmente na conta dona da chave API.
+
+  <Expandable title="propriedades de cada regra">
+    <ParamField body="recipient_id" type="string" required>
+      ID da conta StylePay que receberá parte do valor.
+    </ParamField>
+
+    <ParamField body="type" type="string" required>
+      Tipo de divisão aplicado ao recebedor.
+
+      Valores permitidos: `"percentage"` ou `"fixed"`.
+    </ParamField>
+
+    <ParamField body="amount" type="number" required>
+      Valor da regra de split.
+
+      Se `type` for `"percentage"`, o valor representa percentual. Exemplo: `20` significa `20%`.
+
+      Se `type` for `"fixed"`, o valor representa reais. Exemplo: `15.00` significa `R$ 15,00`.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Regras de cálculo
+
+- O split é aplicado sobre o valor líquido da transação, após as taxas da StylePay.
+- Regras do tipo `"percentage"` representam uma porcentagem do valor líquido.
+- Regras do tipo `"fixed"` representam um valor fixo em reais.
+- O valor restante, após a distribuição do split, fica na conta dona da chave API.
+- A soma dos percentuais não pode ultrapassar `100%`.
+- A soma dos valores fixos não pode ser maior que o valor líquido disponível.
+- Caso alguma regra seja inválida, a criação da cobrança poderá ser recusada.
+
+## Resposta
+
+<ResponseField name="statusCode" type="number">
+  Código de status HTTP da requisição. Exemplo: `200`.
+</ResponseField>
+
+<ResponseField name="payment_id" type="string">
+  ID único da transação criada na StylePay.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Status inicial da transação. Exemplo: `"PENDING"`.
+</ResponseField>
+
+<ResponseField name="qr_code" type="string">
+  Código PIX copia e cola gerado para pagamento.
+</ResponseField>
+
+<ResponseField name="qr_code_base64" type="string">
+  Imagem do QR Code em Base64.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Mensagem descritiva da operação.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl --location 'https://api.stylepay.com.br/api/v1/gateway/payment' \
+  --header 'stpi: seu_client_id' \
+  --header 'stps: seu_client_secret' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "amount": 100.00,
+    "payment_method": "PIX",
+    "split_rules": [
+      {
+        "recipient_id": "us_96337330",
+        "type": "percentage",
+        "amount": 20
+      },
+      {
+        "recipient_id": "us_11223344",
+        "type": "fixed",
+        "amount": 15.00
+      }
+    ]
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.stylepay.com.br/api/v1/gateway/payment', {
+  method: 'POST',
+  headers: {
+    stpi: 'seu_client_id',
+    stps: 'seu_client_secret',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    amount: 100.00,
+    payment_method: 'PIX',
+    split_rules: [
+      {
+        recipient_id: 'us_96337330',
+        type: 'percentage',
+        amount: 20
+      },
+      {
+        recipient_id: 'us_11223344',
+        type: 'fixed',
+        amount: 15.00
+      }
+    ]
+  })
+});
+
+const json = await response.json();
+
+console.log(`Pagamento criado: ${json.payment_id}`);
+```
+
+```python Python
+import requests
+
+url = "https://api.stylepay.com.br/api/v1/gateway/payment"
+
+headers = {
+    "stpi": "seu_client_id",
+    "stps": "seu_client_secret",
+    "Content-Type": "application/json"
+}
+
+payload = {
+    "amount": 100.00,
+    "payment_method": "PIX",
+    "split_rules": [
+        {
+            "recipient_id": "us_96337330",
+            "type": "percentage",
+            "amount": 20
+        },
+        {
+            "recipient_id": "us_11223344",
+            "type": "fixed",
+            "amount": 15.00
+        }
+    ]
+}
+
+response = requests.post(url, headers=headers, json=payload)
+data = response.json()
+
+print(f"Pagamento criado: {data['payment_id']}")
+```
+
+```php PHP
+<?php
+
+$url = "https://api.stylepay.com.br/api/v1/gateway/payment";
+
+$headers = [
+    "stpi: seu_client_id",
+    "stps: seu_client_secret",
+    "Content-Type: application/json"
+];
+
+$body = json_encode([
+    "amount" => 100.00,
+    "payment_method" => "PIX",
+    "split_rules" => [
+        [
+            "recipient_id" => "us_96337330",
+            "type" => "percentage",
+            "amount" => 20
+        ],
+        [
+            "recipient_id" => "us_11223344",
+            "type" => "fixed",
+            "amount" => 15.00
+        ]
+    ]
+]);
+
+$ch = curl_init($url);
+
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+
+$response = curl_exec($ch);
+
+curl_close($ch);
+
+$json = json_decode($response, true);
+
+echo "Pagamento criado: " . $json["payment_id"];
+
+?>
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json 200
+{
+  "statusCode": 200,
+  "payment_id": "1e6c9f53-fddb-4994-bc02-fd6fe61007fa",
+  "status": "PENDING",
+  "qr_code": "00020101021126580014br.gov.bcb.pix...",
+  "qr_code_base64": "iVBORw0KGgoAAAANSUhEUgAA...",
+  "message": "Pagamento criado com sucesso. O split será processado após a confirmação do pagamento."
+}
+```
+
+```json 400
+{
+  "statusCode": 400,
+  "message": "A soma percentual dos recebedores não pode ultrapassar 100%."
+}
+```
+
+```json 400
+{
+  "statusCode": 400,
+  "message": "A soma dos valores fixos não pode ultrapassar o valor líquido disponível para split."
+}
+```
+
+```json 401
+{
+  "statusCode": 401,
+  "message": "Falha na autenticação."
+}
+```
+
+```json 422
+{
+  "statusCode": 422,
+  "message": "Conta recebedora 'us_96337330' não encontrada ou inativa."
+}
+```
+
+```json 500
+{
+  "statusCode": 500,
+  "message": "Erro interno ao processar a solicitação."
+}
+```
+
+</ResponseExample>
