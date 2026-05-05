@@ -42,22 +42,27 @@ Inclua o objeto `split` junto ao payload normal de criação de QR Code:
       "percentageSplit": "10"
     }
   ]
-} 
+}
 ```
 
-## Neste exemplo, sobre um valor líquido de R$ 90,00 (após taxa de 10%):
+## Exemplo de cálculo
 
-Recebedor	Percentual	Valor
-parceiro1	20%	R$ 18,00
-parceiro2	10%	R$ 9,00
-Dono da cobrança	70% restante	R$ 63,00
-Resposta
+Neste exemplo, considere uma cobrança de `R$ 100,00` com valor líquido de `R$ 90,00` após uma taxa de `10%`.
+
+| Recebedor | Percentual | Valor |
+|---|---:|---:|
+| `parceiro1` | `20%` | `R$ 18,00` |
+| `parceiro2` | `10%` | `R$ 9,00` |
+| Dono da cobrança | `70% restante` | `R$ 63,00` |
+
+## Resposta
+
 Quando o split é aceito, a resposta inclui um resumo detalhado de como o valor será distribuído:
 
 ```json
 {
   "statusCode": 200,
-  "message": "QR Code gerado com sucesso",
+  "message": "QR Code gerado com sucesso.",
   "data": {
     "payment_id": "1e6c9f53-fddb-4994-bc02-fd6fe61007fa",
     "qrcode": "00020101021226870014br.gov.bcb.pix...",
@@ -68,11 +73,22 @@ Quando o split é aceito, a resposta inclui um resumo detalhado de como o valor 
       "split_amount_cents": 2700,
       "owner_amount_cents": 6300,
       "recipients": [
-        { "username": "parceiro1", "percentage": 20, "amount_cents": 1800 },
-        { "username": "parceiro2", "percentage": 10, "amount_cents": 900 }
+        {
+          "username": "parceiro1",
+          "percentage": 20,
+          "amount_cents": 1800
+        },
+        {
+          "username": "parceiro2",
+          "percentage": 10,
+          "amount_cents": 900
+        }
       ]
     }
   }
 }
-Os valores em `amount_cents` consideram arredondamento pelo método **Largest Remainder**, garantindo que nenhum centavo seja perdido na distribuição entre os recebedores. 
 ```
+
+<Info>
+  Os valores em `amount_cents` consideram arredondamento pelo método **Largest Remainder**, garantindo que nenhum centavo seja perdido na distribuição entre os recebedores.
+</Info>
