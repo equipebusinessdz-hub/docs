@@ -42,7 +42,8 @@ Inclua o objeto `split` junto ao payload normal de criação de QR Code:
       "percentageSplit": "10"
     }
   ]
-}
+}```
+
 Neste exemplo, sobre um valor líquido de R$ 90,00 (após taxa de 10%):
 
 Recebedor	Percentual	Valor
@@ -52,7 +53,7 @@ Dono da cobrança	70% restante	R$ 63,00
 Resposta
 Quando o split é aceito, a resposta inclui um resumo detalhado de como o valor será distribuído:
 
-json
+```json
 {
   "statusCode": 200,
   "message": "QR Code gerado com sucesso",
