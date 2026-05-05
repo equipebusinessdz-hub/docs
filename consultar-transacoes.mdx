@@ -24,7 +24,7 @@ Esta requisição requer autenticação via headers customizados:
 
 Você deve enviar um corpo em JSON informando qual transação deseja buscar.
 
-É obrigatório enviar **pelo menos um** dos parâmetros abaixo: `payment_id` ou `external_id`.
+Envie **apenas um** dos campos abaixo: `payment_id` ou `external_id`.
 
 <ParamField body="payment_id" type="string">
   O ID único da transação gerado pela StylePay.
@@ -76,23 +76,13 @@ Você deve enviar um corpo em JSON informando qual transação deseja buscar.
 
 <RequestExample>
 
-```bash cURL - Consulta por external_id
+```bash cURL
 curl --location 'https://api.stylepay.com.br/api/v1/wallet/transaction' \
   --header 'stpi: seu_client_id' \
   --header 'stps: seu_client_secret' \
   --header 'Content-Type: application/json' \
   --data '{
     "external_id": "pedido-1010"
-  }'
-```
-
-```bash cURL - Consulta por payment_id
-curl --location 'https://api.stylepay.com.br/api/v1/wallet/transaction' \
-  --header 'stpi: seu_client_id' \
-  --header 'stps: seu_client_secret' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "payment_id": "1e6c9f53-fddb-4994-bc02-fd6fe61007fa"
   }'
 ```
 
@@ -106,6 +96,9 @@ const response = await fetch('https://api.stylepay.com.br/api/v1/wallet/transact
   },
   body: JSON.stringify({
     external_id: 'pedido-1010'
+
+    // Para consultar pelo ID da StylePay, envie assim:
+    // payment_id: '1e6c9f53-fddb-4994-bc02-fd6fe61007fa'
   })
 });
 
@@ -133,6 +126,9 @@ headers = {
 
 payload = {
     "external_id": "pedido-1010"
+
+    # Para consultar pelo ID da StylePay, envie assim:
+    # "payment_id": "1e6c9f53-fddb-4994-bc02-fd6fe61007fa"
 }
 
 response = requests.post(url, headers=headers, json=payload)
@@ -159,6 +155,9 @@ $headers = [
 
 $body = json_encode([
     "external_id" => "pedido-1010"
+
+    // Para consultar pelo ID da StylePay, envie assim:
+    // "payment_id" => "1e6c9f53-fddb-4994-bc02-fd6fe61007fa"
 ]);
 
 $ch = curl_init($url);
