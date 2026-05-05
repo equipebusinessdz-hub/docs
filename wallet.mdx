@@ -50,13 +50,26 @@ Esta requisição requer autenticação via headers customizados:
 
 <RequestExample>
 
-```bash cURL
+```bash
 curl --location 'https://api.stylepay.com.br/api/v1/wallet/balance' \
   --header 'stpi: seu_client_id' \
   --header 'stps: seu_client_secret'
 ```
 
 </RequestExample>
+
 <ResponseExample>
+
+```json
+{
+  "statusCode": 200,
+  "message": "Saldo consultado com sucesso.",
+  "data": {
+    "available_cents": 120000,
+    "currency": "BRL"
+  },
+  "timestamp": "2026-05-05T00:12:45-03:00"
+}
+```
 
 </ResponseExample>
