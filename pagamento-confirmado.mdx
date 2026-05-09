@@ -1,0 +1,69 @@
+---
+title: "Webhook de confirmacao de pagamento"
+description: "Exemplo simples de como a StylePay envia a confirmacao de pagamento."
+---
+
+# Webhook de confirmacao de pagamento
+
+Quando um pagamento PIX e confirmado, a StylePay envia uma requisicao `POST` para a URL informada no campo `postbackUrl`.
+
+## Exemplo de URL configurada
+
+```json
+{
+  "postbackUrl": "https://seusite.com/webhooks/stylepay"
+}
+```
+
+## Como o webhook chega
+
+A requisicao enviada para sua URL tera o formato abaixo:
+
+```http
+POST /webhooks/stylepay HTTP/1.1
+Host: seusite.com
+Content-Type: application/json
+X-Webhook-Id: 9f4b5f0a-8c2d-4a9a-9d32-2a9c8a0f7c11
+X-Webhook-Event: pix.cashin.paid
+```
+
+```json
+{
+  "event": "pix.cashin.paid",
+  "transaction_id": "0f3e9a3c-8b4a-4a83-bf5f-8a0a8f8d92c1",
+  "status": "PAID",
+  "amount": 149.9,
+  "event_type": "pix.cashin.paid",
+  "paid_at": "2026-05-09T22:15:30.000Z",
+  "end_to_end_id": "E1234567820260509221530000000001",
+  "metadata": {
+    "requestNumber": "pedido-123",
+    "raw_event": "pix.cashin.paid"
+  }
+}
+```
+
+## Campos principais
+
+| Campo | Descricao |
+| --- | --- |
+| `event` | Evento enviado pela StylePay. |
+| `transaction_id` | ID da transacao na StylePay. |
+| `status` | Status do pagamento. Quando confirmado, chega como `PAID`. |
+| `amount` | Valor pago em reais. |
+| `paid_at` | Data e hora da confirmacao, quando disponivel. |
+| `metadata.requestNumber` | Referencia externa enviada na criacao da cobranca, quando disponivel. |
+
+## Resposta esperada
+
+Seu endpoint deve responder com status `2xx` para confirmar o recebimento:
+
+```json
+{
+  "received": true
+}
+```
+
+<Warning>
+  O webhook pode ser reenviado. Use `transaction_id` ou a referencia do seu pedido para evitar processar o mesmo pagamento mais de uma vez.
+</Warning>
