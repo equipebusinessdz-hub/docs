@@ -1,31 +1,56 @@
 ---
 title: "Split de Pagamentos"
-description: "Distribua automaticamente o valor de uma cobrança entre múltiplos recebedores no momento da liquidação."
+description: "Distribua automaticamente o valor liquido de uma cobranca entre multiplos recebedores no momento da liquidacao."
 ---
+
 ## Como funciona
-Ao gerar um QR Code, inclua o array `split` no payload. Quando a transação for paga, o valor líquido é distribuído automaticamente entre os recebedores definidos — sem nenhuma ação adicional da sua parte.
+
+Ao gerar um QR Code, inclua o array `split` no payload. Quando a transacao for paga, o valor liquido e distribuido automaticamente entre os recebedores definidos, sem nenhuma acao adicional da sua parte.
+
 <Info>
-  O split incide sobre o **valor líquido** (após a taxa da plataforma). O percentual restante fica automaticamente com o dono da cobrança.
+  O split incide sobre o **valor liquido** da cobranca, ou seja, depois da taxa da plataforma. A taxa fica com a plataforma e o valor liquido restante fica automaticamente com o dono da cobranca.
 </Info>
+
+Voce pode distribuir o split de duas formas:
+
+- Por percentual, usando `percentageSplit`
+- Por valor fixo em centavos, usando `fixedAmountCents`
+
+Tambem e possivel misturar os dois modos no mesmo array. Percentuais sempre sao calculados sobre o valor liquido total, nao sobre o saldo restante depois dos valores fixos.
+
 ## Campos do split
-| Campo | Tipo | Descrição |
-|---|---|---|
-| `username` | `string` | Username da conta StylePay que receberá a fatia. |
-| `percentageSplit` | `string` | Percentual a ser repassado. Aceita decimais (ex: `"10.5"`). |
-## Regras
+
+| Campo | Tipo | Descricao |
+| --- | --- | --- |
+| `username` | `string` | Username da conta StylePay que recebera a fatia. |
+| `percentageSplit` | `string` ou `number` | Percentual a ser repassado. Aceita decimais, por exemplo `"10.5"`. |
+| `fixedAmountCents` | `number` | Valor fixo em centavos. Deve ser inteiro, por exemplo `300` para R\$ 3,00. |
+
 <Warning>
-  - Percentual **mínimo** por destinatário: `0.1%`
-  - Soma total de todos os splits: **máximo `95%`**
-  - O mesmo `username` **não pode** aparecer duas vezes no array
-  - Todos os destinatários precisam ter conta **ativa** na StylePay
-  - O dono da cobrança **não pode** ser destinatário explícito do split
+  Cada item do split deve informar exatamente um modo: `percentageSplit` ou `fixedAmountCents`. Nao envie os dois no mesmo item e nao deixe os dois ausentes.
 </Warning>
-## Exemplo de payload
-Inclua o objeto `split` junto ao payload normal de criação de QR Code:
+
+## Regras
+
+<Warning>
+  - Percentual minimo por destinatario: `0.1%`
+  - Percentual maximo por destinatario: `95%`
+  - Valor fixo minimo por destinatario: `1` centavo
+  - Soma total do split: maximo de `95%` do valor liquido
+  - O mesmo `username` nao pode aparecer duas vezes no array
+  - Todos os destinatarios precisam ter conta ativa na StylePay
+  - O dono da cobranca nao pode ser destinatario explicito do split
+  - `fixedAmount`, valor em reais decimal, string monetaria e float nao sao aceitos para valor fixo
+</Warning>
+
+## Exemplo com percentual
+
+Inclua o objeto `split` junto ao payload normal de criacao de QR Code:
+
 ```json
 {
   "amount": 100,
-  "external_id": "pedido-2025",
+  "external_id": "pedido-2026",
   "payer": {
     "name": "Monkey D. Luffy",
     "document": "",
@@ -45,19 +70,82 @@ Inclua o objeto `split` junto ao payload normal de criação de QR Code:
 }
 ```
 
-## Exemplo de cálculo
+## Exemplo com valor fixo e percentual
 
-Neste exemplo, considere uma cobrança de `R$ 100,00` com valor líquido de `R$ 90,00` após uma taxa de `10%`.
+Neste exemplo, a cobranca bruta e de `R$ 15,00`, a taxa da plataforma e `R$ 1,00` e o valor liquido e `R$ 14,00`.
 
-| Recebedor | Percentual | Valor |
-|---|---:|---:|
-| `parceiro1` | `20%` | `R$ 18,00` |
-| `parceiro2` | `10%` | `R$ 9,00` |
-| Dono da cobrança | `70% restante` | `R$ 63,00` |
+```json
+{
+  "amount": 15,
+  "external_id": "pedido-2026-001",
+  "payer": {
+    "name": "Monkey D. Luffy",
+    "document": "",
+    "email": ""
+  },
+  "postbackUrl": "",
+  "split": [
+    {
+      "username": "alice",
+      "fixedAmountCents": 300
+    },
+    {
+      "username": "bob",
+      "percentageSplit": "10"
+    }
+  ]
+}
+```
+
+### Calculo
+
+| Recebedor | Regra | Valor |
+| --- | --: | --: |
+| Plataforma | Taxa | R\$ 1,00 |
+| `alice` | R\$ 3,00 fixo | R\$ 3,00 |
+| `bob` | 10% do liquido total | R\$ 1,40 |
+| Dono da cobranca | Liquido restante | R\$ 9,60 |
+
+## Exemplos invalidos
+
+Nao envie `fixedAmount`; use somente `fixedAmountCents`:
+
+```json
+{
+  "username": "alice",
+  "fixedAmount": 300
+}
+```
+
+Nao envie valor fixo como decimal em reais, string monetaria ou float:
+
+```json
+{
+  "username": "alice",
+  "fixedAmountCents": "R$ 3,00"
+}
+```
+
+```json
+{
+  "username": "alice",
+  "fixedAmountCents": 300.5
+}
+```
+
+Nao envie percentual e valor fixo no mesmo item:
+
+```json
+{
+  "username": "alice",
+  "percentageSplit": "10",
+  "fixedAmountCents": 300
+}
+```
 
 ## Resposta
 
-Quando o split é aceito, a resposta inclui um resumo detalhado de como o valor será distribuído:
+Quando o split e aceito, a resposta inclui um resumo detalhado de como o valor sera distribuido:
 
 ```json
 {
@@ -69,19 +157,25 @@ Quando o split é aceito, a resposta inclui um resumo detalhado de como o valor 
     "qrcode_image": "iVBORw0KGgoAAAANS...",
     "status": "PENDING",
     "split": {
-      "total_percentage": 30,
-      "split_amount_cents": 2700,
-      "owner_amount_cents": 6300,
+      "mode": "MIXED",
+      "total_percentage": 10,
+      "total_fixed_amount_cents": 300,
+      "split_amount_cents": 440,
+      "owner_amount_cents": 960,
       "recipients": [
         {
-          "username": "parceiro1",
-          "percentage": 20,
-          "amount_cents": 1800
+          "username": "alice",
+          "allocation_type": "FIXED",
+          "percentage": null,
+          "fixedAmountCents": 300,
+          "amount_cents": 300
         },
         {
-          "username": "parceiro2",
+          "username": "bob",
+          "allocation_type": "PERCENTAGE",
           "percentage": 10,
-          "amount_cents": 900
+          "fixedAmountCents": null,
+          "amount_cents": 140
         }
       ]
     }
@@ -90,5 +184,5 @@ Quando o split é aceito, a resposta inclui um resumo detalhado de como o valor 
 ```
 
 <Info>
-  Os valores em `amount_cents` consideram arredondamento pelo método **Largest Remainder**, garantindo que nenhum centavo seja perdido na distribuição entre os recebedores.
+  Os valores em `amount_cents`, `fixedAmountCents`, `split_amount_cents` e `owner_amount_cents` estao em centavos. Quando houver arredondamento em splits percentuais, a distribuicao usa o metodo **Largest Remainder** para garantir que nenhum centavo seja perdido.
 </Info>
